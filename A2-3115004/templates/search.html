@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chirp - Search</title>
+    <link type="text/css" href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"/>
+    <script type="module" src="{{ url_for('static', path='/firebase-login.js')}}"></script>
+</head>
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1 class="logo">🐦 Chirp</h1>
+            <nav>
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/search" class="nav-link active">🔍 Search</a>
+                <a href="/profile/{{ current_user.username }}" class="nav-link">👤 Profile</a>
+            </nav>
+            <div class="user-info">
+                {% if current_user.photo_url %}
+                    <img src="{{ current_user.photo_url }}" class="avatar" alt="avatar"/>
+                {% else %}
+                    <div class="avatar-placeholder">{{ current_user.username[0].upper() }}</div>
+                {% endif %}
+                <strong>@{{ current_user.username }}</strong>
+            </div>
+            <div id="login-box" hidden="true">
+                <input type="text" id="email" hidden/>
+                <input type="password" id="password" hidden/>
+                <button id="login" hidden></button>
+                <button id="sign-up" hidden></button>
+            </div>
+            <button id="sign-out" class="btn btn-outline">Sign Out</button>
+        </div>
+
+        <!-- Search main -->
+        <div class="main">
+            <div class="feed-header"><h2>Search</h2></div>
+
+            <!-- Search form -->
+            <div class="search-box">
+                <form action="/search" method="get">
+                    <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="search-input"/>
+                    <select name="type" class="search-select">
+                        <option value="users"  {% if search_type == 'users'  %}selected{% endif %}>Users</option>
+                        <option value="tweets" {% if search_type == 'tweets' %}selected{% endif %}>Tweets</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
+            <!-- User results -->
+            {% if search_type == 'users' %}
+                {% for u in user_results %}
+                <div class="user-card">
+                    <a href="/profile/{{ u.username }}">
+                        {% if u.photo_url %}
+                            <img src="{{ u.photo_url }}" class="avatar-sm" alt="avatar"/>
+                        {% else %}
+                            <div class="avatar-placeholder-sm">{{ u.username[0].upper() }}</div>
+                        {% endif %}
+                    </a>
+                    <div>
+                        <a href="/profile/{{ u.username }}" class="username">@{{ u.username }}</a>
+                        <p class="bio-sm">{{ u.bio or '' }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if query and not user_results %}
+                    <div class="empty-state"><p>No users found for "{{ query }}"</p></div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Tweet results -->
+            {% if search_type == 'tweets' %}
+                {% for tweet in tweet_results %}
+                <div class="tweet-card">
+                    <div class="tweet-header">
+                        {% if tweet.author_photo %}
+                            <img src="{{ tweet.author_photo }}" class="avatar-sm" alt="avatar"/>
+                        {% else %}
+                            <div class="avatar-placeholder-sm">{{ tweet.author_username[0].upper() }}</div>
+                        {% endif %}
+                        <div class="tweet-meta">
+                            <a href="/profile/{{ tweet.author_username }}" class="username">
+                                @{{ tweet.author_username }}
+                            </a>
+                            <span class="tweet-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </div>
+                    <p class="tweet-content">{{ tweet.content }}</p>
+                    {% if tweet.image_url %}
+                        <img src="{{ tweet.image_url }}" class="tweet-image" alt="tweet image"/>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% if query and not tweet_results %}
+                    <div class="empty-state"><p>No tweets found for "{{ query }}"</p></div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

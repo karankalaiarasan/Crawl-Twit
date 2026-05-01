@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chirp - Login</title>
+    <link type="text/css" href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"/>
+    <script type="module" src="{{ url_for('static', path='/firebase-login.js')}}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-box">
+            <h1 class="logo">🐦 Chirp</h1>
+            <p class="tagline">What's happening?</p>
+
+            <div id="login-box" hidden="true">
+                <h2>Sign in to Chirp</h2>
+                <input type="text" id="email" placeholder="Email address"/>
+                <input type="password" id="password" placeholder="Password"/>
+                <button id="login" class="btn btn-primary">Login</button>
+                <button id="sign-up" class="btn btn-outline">Sign Up</button>
+            </div>
+
+            <button id="sign-out" hidden="true" class="btn btn-outline">Sign Out</button>
+        </div>
+    </div>
+</body>
+</html>

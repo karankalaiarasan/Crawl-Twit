@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chirp - @{{ profile_user.username }}</title>
+    <link type="text/css" href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"/>
+    <script type="module" src="{{ url_for('static', path='/firebase-login.js')}}"></script>
+</head>
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1 class="logo">🐦 Chirp</h1>
+            <nav>
+                <a href="/" class="nav-link">🏠 Home</a>
+                <a href="/search" class="nav-link">🔍 Search</a>
+                <a href="/profile/{{ current_user.username }}" class="nav-link active">👤 Profile</a>
+            </nav>
+            <div class="user-info">
+                {% if current_user.photo_url %}
+                    <img src="{{ current_user.photo_url }}" class="avatar" alt="avatar"/>
+                {% else %}
+                    <div class="avatar-placeholder">{{ current_user.username[0].upper() }}</div>
+                {% endif %}
+                <strong>@{{ current_user.username }}</strong>
+            </div>
+            <div id="login-box" hidden="true">
+                <input type="text" id="email" hidden/>
+                <input type="password" id="password" hidden/>
+                <button id="login" hidden></button>
+                <button id="sign-up" hidden></button>
+            </div>
+            <button id="sign-out" class="btn btn-outline">Sign Out</button>
+        </div>
+
+        <!-- Profile main -->
+        <div class="main">
+            <!-- Profile header -->
+            <div class="profile-header">
+                {% if profile_user.photo_url %}
+                    <img src="{{ profile_user.photo_url }}" class="avatar-lg" alt="avatar"/>
+                {% else %}
+                    <div class="avatar-placeholder-lg">{{ profile_user.username[0].upper() }}</div>
+                {% endif %}
+
+                <div class="profile-info">
+                    <h2>@{{ profile_user.username }}</h2>
+                    <p class="bio">{{ profile_user.bio or 'No bio yet.' }}</p>
+                    <p class="follow-counts">
+                        <strong>{{ profile_user.following|length }}</strong> Following &nbsp;
+                        <strong>{{ profile_user.followers|length }}</strong> Followers
+                    </p>
+
+                    <!-- Follow / Unfollow -->
+                    {% if current_user.user_id != profile_user.user_id %}
+                        {% if is_following %}
+                        <form action="/unfollow" method="post" class="inline-form">
+                            <input type="hidden" name="target_user_id" value="{{ profile_user.user_id }}"/>
+                            <input type="hidden" name="redirect_url" value="/profile/{{ profile_user.username }}"/>
+                            <button type="submit" class="btn btn-outline">Unfollow</button>
+                        </form>
+                        {% else %}
+                        <form action="/follow" method="post" class="inline-form">
+                            <input type="hidden" name="target_user_id" value="{{ profile_user.user_id }}"/>
+                            <input type="hidden" name="redirect_url" value="/profile/{{ profile_user.username }}"/>
+                            <button type="submit" class="btn btn-primary">Follow</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Edit profile (own profile only) -->
+                    {% if current_user.user_id == profile_user.user_id %}
+                    <div class="edit-profile">
+                        <h3>Edit Profile</h3>
+                        <form action="/edit-profile" method="post" enctype="multipart/form-data">
+                            <textarea name="bio" placeholder="Write a bio..." maxlength="280">{{ profile_user.bio or '' }}</textarea>
+                            <label class="btn btn-outline btn-sm">
+                                📷 Change Photo
+                                <input type="file" name="photo" accept=".jpg,.jpeg,.png" hidden/>
+                            </label>
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tweets -->
+            <div class="feed-header"><h3>Tweets</h3></div>
+
+            {% for tweet in tweets %}
+            <div class="tweet-card">
+                <div class="tweet-header">
+                    {% if profile_user.photo_url %}
+                        <img src="{{ profile_user.photo_url }}" class="avatar-sm" alt="avatar"/>
+                    {% else %}
+                        <div class="avatar-placeholder-sm">{{ profile_user.username[0].upper() }}</div>
+                    {% endif %}
+                    <div class="tweet-meta">
+                        <span class="username">@{{ profile_user.username }}</span>
+                        {% if tweet.is_retweet %}
+                            <span class="retweet-label">🔁 Retweeted from @{{ tweet.original_author }}</span>
+                        {% endif %}
+                        <span class="tweet-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
+                    </div>
+                </div>
+
+                <p class="tweet-content">{{ tweet.content }}</p>
+
+                {% if tweet.image_url %}
+                    <img src="{{ tweet.image_url }}" class="tweet-image" alt="tweet image"/>
+                {% endif %}
+
+                <div class="tweet-actions">
+                    {% if current_user.user_id == profile_user.user_id and not tweet.is_retweet %}
+                    <button class="btn-action" onclick="toggleEdit('{{ tweet._id_str }}')">✏️ Edit</button>
+                    <form action="/delete-tweet" method="post" class="inline-form">
+                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
+                        <button type="submit" class="btn-action btn-danger">🗑️ Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                {% if current_user.user_id == profile_user.user_id and not tweet.is_retweet %}
+                <div id="edit-{{ tweet._id_str }}" class="edit-form" hidden>
+                    <form action="/edit-tweet" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
+                        <textarea name="content" maxlength="280">{{ tweet.content }}</textarea>
+                        <label class="btn btn-outline btn-sm">
+                            📷 Change Image
+                            <input type="file" name="image" accept=".jpg,.jpeg,.png" hidden/>
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="toggleEdit('{{ tweet._id_str }}')">Cancel</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if not tweets %}
+            <div class="empty-state"><p>No tweets yet.</p></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function toggleEdit(id) {
+            const form = document.getElementById('edit-' + id);
+            form.hidden = !form.hidden;
+        }
+    </script>
+</body>
+</html>

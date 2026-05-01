@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chirp - Choose Username</title>
+    <link type="text/css" href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"/>
+    <script type="module" src="{{ url_for('static', path='/firebase-login.js')}}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-box">
+            <h1 class="logo">🐦 Chirp</h1>
+            <h2>Choose your username</h2>
+            <p>Pick a unique username to get started.</p>
+
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+
+            <form action="/setup-username" method="post">
+                <input type="text" name="username" placeholder="Username" maxlength="20" required/>
+                <button type="submit" class="btn btn-primary">Continue</button>
+            </form>
+
+            <div id="login-box" hidden="true">
+                <input type="text" id="email" hidden/>
+                <input type="password" id="password" hidden/>
+                <button id="login" hidden></button>
+                <button id="sign-up" hidden></button>
+            </div>
+            <button id="sign-out" class="btn btn-outline">Sign Out</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chirp - Home</title>
+    <link type="text/css" href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"/>
+    <script type="module" src="{{ url_for('static', path='/firebase-login.js')}}"></script>
+</head>
+<body>
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1 class="logo">🐦 Chirp</h1>
+            <nav>
+                <a href="/" class="nav-link active">🏠 Home</a>
+                <a href="/search" class="nav-link">🔍 Search</a>
+                <a href="/profile/{{ user.username }}" class="nav-link">👤 Profile</a>
+            </nav>
+            <div class="user-info">
+                {% if user.photo_url %}
+                    <img src="{{ user.photo_url }}" class="avatar" alt="avatar"/>
+                {% else %}
+                    <div class="avatar-placeholder">{{ user.username[0].upper() }}</div>
+                {% endif %}
+                <div>
+                    <strong>@{{ user.username }}</strong>
+                </div>
+            </div>
+            <div id="login-box" hidden="true">
+                <input type="text" id="email" hidden/>
+                <input type="password" id="password" hidden/>
+                <button id="login" hidden></button>
+                <button id="sign-up" hidden></button>
+            </div>
+            <button id="sign-out" class="btn btn-outline">Sign Out</button>
+        </div>
+
+        <!-- Main feed -->
+        <div class="main">
+            <div class="feed-header">
+                <h2>Home</h2>
+            </div>
+
+            <!-- Tweet composer -->
+            <div class="composer">
+                {% if user.photo_url %}
+                    <img src="{{ user.photo_url }}" class="avatar-sm" alt="avatar"/>
+                {% else %}
+                    <div class="avatar-placeholder-sm">{{ user.username[0].upper() }}</div>
+                {% endif %}
+                <form action="/post-tweet" method="post" enctype="multipart/form-data" class="composer-form">
+                    <textarea name="content" placeholder="What's happening?" maxlength="280" id="tweet-content"></textarea>
+                    <div class="composer-actions">
+                        <label class="btn btn-outline btn-sm" for="image-upload">
+                            📷 Image
+                        </label>
+                        <input type="file" name="image" id="image-upload" accept=".jpg,.jpeg,.png" style="display:none"/>
+                        <span id="image-name" style="font-size:13px; color:#536471;"></span>
+                        <span id="char-count">280</span>
+                        <button type="submit" class="btn btn-primary btn-sm">Chirp</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Timeline -->
+            {% for tweet in tweets %}
+            <div class="tweet-card">
+                <div class="tweet-header">
+                    <a href="/profile/{{ tweet.author_username }}">
+                        {% if tweet.author_photo %}
+                            <img src="{{ tweet.author_photo }}" class="avatar-sm" alt="avatar"/>
+                        {% else %}
+                            <div class="avatar-placeholder-sm">{{ tweet.author_username[0].upper() }}</div>
+                        {% endif %}
+                    </a>
+                    <div class="tweet-meta">
+                        <a href="/profile/{{ tweet.author_username }}" class="username">
+                            @{{ tweet.author_username }}
+                        </a>
+                        {% if tweet.is_retweet %}
+                            <span class="retweet-label">🔁 Retweeted</span>
+                        {% endif %}
+                        <span class="tweet-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
+                    </div>
+                </div>
+
+                <p class="tweet-content">{{ tweet.content }}</p>
+
+                {% if tweet.image_url %}
+                    <img src="{{ tweet.image_url }}" class="tweet-image" alt="tweet image"/>
+                {% endif %}
+
+                <div class="tweet-actions">
+                    <!-- Retweet -->
+                    {% if tweet.user_id != user.user_id %}
+                    <form action="/retweet" method="post" class="inline-form">
+                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
+                        <button type="submit" class="btn-action">🔁 Retweet</button>
+                    </form>
+                    {% endif %}
+
+                    <!-- Edit / Delete (only own tweets) -->
+                    {% if tweet.user_id == user.user_id and not tweet.is_retweet %}
+                    <button class="btn-action" onclick="toggleEdit('{{ tweet._id_str }}')">✏️ Edit</button>
+                    <form action="/delete-tweet" method="post" class="inline-form">
+                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
+                        <button type="submit" class="btn-action btn-danger">🗑️ Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <!-- Edit form (hidden by default) -->
+                {% if tweet.user_id == user.user_id and not tweet.is_retweet %}
+                <div id="edit-{{ tweet._id_str }}" class="edit-form" hidden>
+                    <form action="/edit-tweet" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
+                        <textarea name="content" maxlength="280">{{ tweet.content }}</textarea>
+                        <label class="btn btn-outline btn-sm">
+                            📷 Change Image
+                            <input type="file" name="image" accept=".jpg,.jpeg,.png" hidden/>
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="toggleEdit('{{ tweet._id_str }}')">Cancel</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if not tweets %}
+            <div class="empty-state">
+                <p>No tweets yet. Follow some people or post your first chirp!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Character counter
+        const textarea  = document.getElementById('tweet-content');
+        const charCount = document.getElementById('char-count');
+        if(textarea) {
+            textarea.addEventListener('input', function() {
+                charCount.textContent = 280 - this.value.length;
+            });
+        }
+
+        // Toggle edit form
+        function toggleEdit(id) {
+            const form = document.getElementById('edit-' + id);
+            form.hidden = !form.hidden;
+        }
+    </script>
+</body>
+</html>
