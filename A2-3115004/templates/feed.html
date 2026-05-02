@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chirp - Home</title>
+    <title>Crawl - Home</title>
     <link type="text/css" href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"/>
     <script type="module" src="{{ url_for('static', path='/firebase-login.js')}}"></script>
 </head>
@@ -10,7 +10,7 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <h1 class="logo">🐦 Chirp</h1>
+            <h1 class="logo">🐦 Crawl</h1>
             <nav>
                 <a href="/" class="nav-link active">🏠 Home</a>
                 <a href="/search" class="nav-link">🔍 Search</a>
@@ -57,7 +57,7 @@
                         <input type="file" name="image" id="image-upload" accept=".jpg,.jpeg,.png" style="display:none"/>
                         <span id="image-name" style="font-size:13px; color:#536471;"></span>
                         <span id="char-count">280</span>
-                        <button type="submit" class="btn btn-primary btn-sm">Chirp</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Crawl</button>
                     </div>
                 </form>
             </div>
@@ -129,7 +129,7 @@
 
             {% if not tweets %}
             <div class="empty-state">
-                <p>No tweets yet. Follow some people or post your first chirp!</p>
+                <p>No tweets yet. Follow some people or post your first Crawl!</p>
             </div>
             {% endif %}
         </div>
