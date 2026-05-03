@@ -89,29 +89,29 @@
             <div class="feed-header"><h3>Tweets</h3></div>
 
             {% for tweet in tweets %}
-            <div class="tweet-card">
-                <div class="tweet-header">
+            <div class="Claw-card">
+                <div class="Claw-header">
                     {% if profile_user.photo_url %}
                         <img src="{{ profile_user.photo_url }}" class="avatar-sm" alt="avatar"/>
                     {% else %}
                         <div class="avatar-placeholder-sm">{{ profile_user.username[0].upper() }}</div>
                     {% endif %}
-                    <div class="tweet-meta">
+                    <div class="Claw-meta">
                         <span class="username">@{{ profile_user.username }}</span>
                         {% if tweet.is_retweet %}
                             <span class="retweet-label">🔁 Retweeted from @{{ tweet.original_author }}</span>
                         {% endif %}
-                        <span class="tweet-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
+                        <span class="Claw-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
                     </div>
                 </div>
 
-                <p class="tweet-content">{{ tweet.content }}</p>
+                <p class="Claw-content">{{ tweet.content }}</p>
 
                 {% if tweet.image_url %}
-                    <img src="{{ tweet.image_url }}" class="tweet-image" alt="tweet image"/>
+                    <img src="{{ tweet.image_url }}" class="Claw-image" alt="tweet image"/>
                 {% endif %}
 
-                <div class="tweet-actions">
+                <div class="Claw-actions">
                     {% if current_user.user_id == profile_user.user_id and not tweet.is_retweet %}
                     <button class="btn-action" onclick="toggleEdit('{{ tweet._id_str }}')">✏️ Edit</button>
                     <form action="/delete-tweet" method="post" class="inline-form">

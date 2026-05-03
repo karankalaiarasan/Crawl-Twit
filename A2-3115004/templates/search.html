@@ -10,7 +10,7 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <h1 class="logo">🐦 Crawl</h1>
+            <h1 class="logo">🦀 Crawl</h1>
             <nav>
                 <a href="/" class="nav-link">🏠 Home</a>
                 <a href="/search" class="nav-link active">🔍 Search</a>
@@ -43,7 +43,7 @@
                     <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="search-input"/>
                     <select name="type" class="search-select">
                         <option value="users"  {% if search_type == 'users'  %}selected{% endif %}>Users</option>
-                        <option value="tweets" {% if search_type == 'tweets' %}selected{% endif %}>Tweets</option>
+                        <option value="Claws" {% if search_type == 'Claws' %}selected{% endif %}>Claws</option>
                     </select>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
@@ -71,31 +71,31 @@
                 {% endif %}
             {% endif %}
 
-            <!-- Tweet results -->
-            {% if search_type == 'tweets' %}
-                {% for tweet in tweet_results %}
-                <div class="tweet-card">
-                    <div class="tweet-header">
-                        {% if tweet.author_photo %}
-                            <img src="{{ tweet.author_photo }}" class="avatar-sm" alt="avatar"/>
+            <!-- Claw results -->
+            {% if search_type == 'Claws' %}
+                {% for Claw in Claw_results %}
+                <div class="Claw-card">
+                    <div class="Claw-header">
+                        {% if Claw.author_photo %}
+                            <img src="{{ Claw.author_photo }}" class="avatar-sm" alt="avatar"/>
                         {% else %}
-                            <div class="avatar-placeholder-sm">{{ tweet.author_username[0].upper() }}</div>
+                            <div class="avatar-placeholder-sm">{{ Claw.author_username[0].upper() }}</div>
                         {% endif %}
-                        <div class="tweet-meta">
-                            <a href="/profile/{{ tweet.author_username }}" class="username">
-                                @{{ tweet.author_username }}
+                        <div class="Claw-meta">
+                            <a href="/profile/{{ Claw.author_username }}" class="username">
+                                @{{ Claw.author_username }}
                             </a>
-                            <span class="tweet-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
+                            <span class="Claw-time">{{ Claw.created_at.strftime('%b %d, %Y') }}</span>
                         </div>
                     </div>
-                    <p class="tweet-content">{{ tweet.content }}</p>
-                    {% if tweet.image_url %}
-                        <img src="{{ tweet.image_url }}" class="tweet-image" alt="tweet image"/>
+                    <p class="Claw-content">{{ Claw.content }}</p>
+                    {% if Claw.image_url %}
+                        <img src="{{ Claw.image_url }}" class="Claw-image" alt="Claw image"/>
                     {% endif %}
                 </div>
                 {% endfor %}
-                {% if query and not tweet_results %}
-                    <div class="empty-state"><p>No tweets found for "{{ query }}"</p></div>
+                {% if query and not Claw_results %}
+                    <div class="empty-state"><p>No Claws found for "{{ query }}"</p></div>
                 {% endif %}
             {% endif %}
         </div>

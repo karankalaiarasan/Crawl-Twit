@@ -36,7 +36,7 @@ except Exception as e:
 # ── Database: A2-3115004 (as required by assignment) ─────────────────────
 db               = client['A2-3115004']
 user_collection  = db['users']
-tweet_collection = db['tweets']
+Claw_collection = db['Claws']
 
 # ── Azurite (Azure Blob Storage) ──────────────────────────────────────────
 azure_connection_string = (
@@ -129,26 +129,26 @@ async def root(request: Request):
     if not user['username']:
         return RedirectResponse('/setup-username')
 
-    # Build timeline: own tweets + tweets from people user follows
+    # Build timeline: own Claws + Claws from people user follows
     following_list = user.get('following', [])
     timeline_users = following_list + [user['user_id']]
 
-    tweets = list(tweet_collection.find(
+    Claws = list(Claw_collection.find(
         {'user_id': {'$in': timeline_users}}
     ).sort('created_at', -1).limit(20))
 
-    # Attach author info to each tweet
-    for tweet in tweets:
-        author = user_collection.find_one({'user_id': tweet['user_id']})
-        tweet['author_username'] = author['username'] if author else 'unknown'
-        tweet['author_photo']    = author.get('photo_url', '') if author else ''
-        tweet['is_retweet']      = tweet.get('is_retweet', False)
-        tweet['_id_str']         = str(tweet['_id'])
+    # Attach author info to each Claw
+    for Claw in Claws:
+        author = user_collection.find_one({'user_id': Claw['user_id']})
+        Claw['author_username'] = author['username'] if author else 'unknown'
+        Claw['author_photo']    = author.get('photo_url', '') if author else ''
+        Claw['is_Claw']      = Claw.get('is_Claw', False)
+        Claw['_id_str']         = str(Claw['_id'])
 
     return templates.TemplateResponse('feed.html', {
         'request':    request,
         'user':       user,
-        'tweets':     tweets,
+        'Claws':     Claws,
         'error':      error_message
     })
 
@@ -191,9 +191,9 @@ async def setupUsernamePost(request: Request):
     return RedirectResponse('/', status_code=status.HTTP_302_FOUND)
 
 
-# ── Post a tweet ──────────────────────────────────────────────────────────
-@app.post('/post-tweet', response_class=RedirectResponse)
-async def postTweet(request: Request):
+# ── Post a Claw ──────────────────────────────────────────────────────────
+@app.post('/post-Claw', response_class=RedirectResponse)
+async def postClaw(request: Request):
     id_token   = request.cookies.get('token')
     user_token = validateFirebaseToken(id_token)
     if not user_token:
@@ -219,28 +219,28 @@ async def postTweet(request: Request):
             blob_client = azure_container_client.get_blob_client(blob=blob_name)
             image_url   = blob_client.url
 
-    tweet = {
+    Claw = {
         'user_id':    user_token['user_id'],
         'content':    content,
         'image_url':  image_url,
         'created_at': datetime.now(),
-        'is_retweet': False,
-        'retweet_of': None
+        'is_Claw': False,
+        'Claw_of': None
     }
-    tweet_collection.insert_one(tweet)
+    Claw_collection.insert_one(Claw)
     return RedirectResponse('/', status_code=status.HTTP_302_FOUND)
 
 
-# ── Edit tweet ────────────────────────────────────────────────────────────
-@app.post('/edit-tweet', response_class=RedirectResponse)
-async def editTweet(request: Request):
+# ── Edit Claw ────────────────────────────────────────────────────────────
+@app.post('/edit-Claw', response_class=RedirectResponse)
+async def editClaw(request: Request):
     id_token   = request.cookies.get('token')
     user_token = validateFirebaseToken(id_token)
     if not user_token:
         return RedirectResponse('/')
 
     form       = await request.form()
-    tweet_id   = form['tweet_id']
+    Claw_id   = form['Claw_id']
     content    = form['content'].strip()
 
     if not content or len(content) > 280:
@@ -264,55 +264,55 @@ async def editTweet(request: Request):
     if image_url:
         update_fields['image_url'] = image_url
 
-    tweet_collection.update_one(
-        {'_id': ObjectId(tweet_id), 'user_id': user_token['user_id']},
+    Claw_collection.update_one(
+        {'_id': ObjectId(Claw_id), 'user_id': user_token['user_id']},
         {'$set': update_fields}
     )
     return RedirectResponse('/', status_code=status.HTTP_302_FOUND)
 
 
-# ── Delete tweet ──────────────────────────────────────────────────────────
-@app.post('/delete-tweet', response_class=RedirectResponse)
-async def deleteTweet(request: Request):
+# ── Delete Claw ──────────────────────────────────────────────────────────
+@app.post('/delete-Claw', response_class=RedirectResponse)
+async def deleteClaw(request: Request):
     id_token   = request.cookies.get('token')
     user_token = validateFirebaseToken(id_token)
     if not user_token:
         return RedirectResponse('/')
 
     form     = await request.form()
-    tweet_id = form['tweet_id']
+    Claw_id = form['Claw_id']
 
-    tweet_collection.delete_one(
-        {'_id': ObjectId(tweet_id), 'user_id': user_token['user_id']}
+    Claw_collection.delete_one(
+        {'_id': ObjectId(Claw_id), 'user_id': user_token['user_id']}
     )
     return RedirectResponse('/', status_code=status.HTTP_302_FOUND)
 
 
-# ── Retweet ───────────────────────────────────────────────────────────────
-@app.post('/retweet', response_class=RedirectResponse)
-async def retweet(request: Request):
+# ── Claw ───────────────────────────────────────────────────────────────
+@app.post('/Claw', response_class=RedirectResponse)
+async def Claw(request: Request):
     id_token   = request.cookies.get('token')
     user_token = validateFirebaseToken(id_token)
     if not user_token:
         return RedirectResponse('/')
 
     form     = await request.form()
-    tweet_id = form['tweet_id']
+    Claw_id = form['Claw_id']
 
-    original = tweet_collection.find_one({'_id': ObjectId(tweet_id)})
+    original = Claw_collection.find_one({'_id': ObjectId(Claw_id)})
     if not original:
         return RedirectResponse('/', status_code=status.HTTP_302_FOUND)
 
-    retweet_doc = {
+    Claw_doc = {
         'user_id':          user_token['user_id'],
         'content':          original['content'],
         'image_url':        original.get('image_url', ''),
         'created_at':       datetime.now(),
-        'is_retweet':       True,
-        'retweet_of':       str(original['_id']),
+        'is_Claw':       True,
+        'Claw_of':       str(original['_id']),
         'original_user_id': original['user_id']
     }
-    tweet_collection.insert_one(retweet_doc)
+    Claw_collection.insert_one(Claw_doc)
     return RedirectResponse('/', status_code=status.HTTP_302_FOUND)
 
 
@@ -332,22 +332,22 @@ async def profile(request: Request, username: str):
 
     is_following = profile_user['user_id'] in current_user.get('following', [])
 
-    tweets = list(tweet_collection.find(
+    Claws = list(Claw_collection.find(
         {'user_id': profile_user['user_id']}
     ).sort('created_at', -1).limit(10))
 
-    for tweet in tweets:
-        tweet['_id_str'] = str(tweet['_id'])
-        if tweet.get('is_retweet'):
+    for Claw in Claws:
+        Claw['_id_str'] = str(Claw['_id'])
+        if Claw.get('is_Claw'):
             orig_author = user_collection.find_one(
-                {'user_id': tweet.get('original_user_id', '')})
-            tweet['original_author'] = orig_author['username'] if orig_author else 'unknown'
+                {'user_id': Claw.get('original_user_id', '')})
+            Claw['original_author'] = orig_author['username'] if orig_author else 'unknown'
 
     return templates.TemplateResponse('profile.html', {
         'request':      request,
         'current_user': current_user,
         'profile_user': profile_user,
-        'tweets':       tweets,
+        'Claws':       Claws,
         'is_following': is_following
     })
 
@@ -413,7 +413,7 @@ async def search(request: Request):
     search_type  = request.query_params.get('type', 'users')
 
     user_results  = []
-    tweet_results = []
+    Claw_results = []
 
     if query:
         if search_type == 'users':
@@ -421,14 +421,14 @@ async def search(request: Request):
                 {'username': {'$regex': f'^{query}', '$options': 'i'}}
             ).limit(20))
         else:
-            tweet_results = list(tweet_collection.find(
+            Claw_results = list(Claw_collection.find(
                 {'content': {'$regex': f'^{query}', '$options': 'i'}}
             ).sort('created_at', -1).limit(20))
-            for tweet in tweet_results:
-                author = user_collection.find_one({'user_id': tweet['user_id']})
-                tweet['author_username'] = author['username'] if author else 'unknown'
-                tweet['author_photo']    = author.get('photo_url', '') if author else ''
-                tweet['_id_str']         = str(tweet['_id'])
+            for Claw in Claw_results:
+                author = user_collection.find_one({'user_id': Claw['user_id']})
+                Claw['author_username'] = author['username'] if author else 'unknown'
+                Claw['author_photo']    = author.get('photo_url', '') if author else ''
+                Claw['_id_str']         = str(Claw['_id'])
 
     return templates.TemplateResponse('search.html', {
         'request':      request,
@@ -436,7 +436,7 @@ async def search(request: Request):
         'query':        query,
         'search_type':  search_type,
         'user_results': user_results,
-        'tweet_results':tweet_results
+        'Claw_results':Claw_results
     })
 
 

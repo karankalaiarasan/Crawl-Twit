@@ -10,7 +10,7 @@
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <h1 class="logo">🐦 Crawl</h1>
+            <h1 class="logo">🦀 Crawl</h1>
             <nav>
                 <a href="/" class="nav-link active">🏠 Home</a>
                 <a href="/search" class="nav-link">🔍 Search</a>
@@ -41,15 +41,15 @@
                 <h2>Home</h2>
             </div>
 
-            <!-- Tweet composer -->
+            <!-- Claw composer -->
             <div class="composer">
                 {% if user.photo_url %}
                     <img src="{{ user.photo_url }}" class="avatar-sm" alt="avatar"/>
                 {% else %}
                     <div class="avatar-placeholder-sm">{{ user.username[0].upper() }}</div>
                 {% endif %}
-                <form action="/post-tweet" method="post" enctype="multipart/form-data" class="composer-form">
-                    <textarea name="content" placeholder="What's happening?" maxlength="280" id="tweet-content"></textarea>
+                <form action="/post-Claw" method="post" enctype="multipart/form-data" class="composer-form">
+                    <textarea name="content" placeholder="What's happening?" maxlength="280" id="Claw-content"></textarea>
                     <div class="composer-actions">
                         <label class="btn btn-outline btn-sm" for="image-upload">
                             📷 Image
@@ -63,73 +63,73 @@
             </div>
 
             <!-- Timeline -->
-            {% for tweet in tweets %}
-            <div class="tweet-card">
-                <div class="tweet-header">
-                    <a href="/profile/{{ tweet.author_username }}">
-                        {% if tweet.author_photo %}
-                            <img src="{{ tweet.author_photo }}" class="avatar-sm" alt="avatar"/>
+            {% for Claw in Claws %}
+            <div class="Claw-card">
+                <div class="Claw-header">
+                    <a href="/profile/{{ Claw.author_username }}">
+                        {% if Claw.author_photo %}
+                            <img src="{{ Claw.author_photo }}" class="avatar-sm" alt="avatar"/>
                         {% else %}
-                            <div class="avatar-placeholder-sm">{{ tweet.author_username[0].upper() }}</div>
+                            <div class="avatar-placeholder-sm">{{ Claw.author_username[0].upper() }}</div>
                         {% endif %}
                     </a>
-                    <div class="tweet-meta">
-                        <a href="/profile/{{ tweet.author_username }}" class="username">
-                            @{{ tweet.author_username }}
+                    <div class="Claw-meta">
+                        <a href="/profile/{{ Claw.author_username }}" class="username">
+                            @{{ Claw.author_username }}
                         </a>
-                        {% if tweet.is_retweet %}
-                            <span class="retweet-label">🔁 Retweeted</span>
+                        {% if Claw.is_Claw %}
+                            <span class="reClaw-label">🔁 ReClawed</span>
                         {% endif %}
-                        <span class="tweet-time">{{ tweet.created_at.strftime('%b %d, %Y') }}</span>
+                        <span class="Claw-time">{{ Claw.created_at.strftime('%b %d, %Y') }}</span>
                     </div>
                 </div>
 
-                <p class="tweet-content">{{ tweet.content }}</p>
+                <p class="Claw-content">{{ Claw.content }}</p>
 
-                {% if tweet.image_url %}
-                    <img src="{{ tweet.image_url }}" class="tweet-image" alt="tweet image"/>
+                {% if Claw.image_url %}
+                    <img src="{{ Claw.image_url }}" class="Claw-image" alt="Claw image"/>
                 {% endif %}
 
-                <div class="tweet-actions">
-                    <!-- Retweet -->
-                    {% if tweet.user_id != user.user_id %}
-                    <form action="/retweet" method="post" class="inline-form">
-                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
-                        <button type="submit" class="btn-action">🔁 Retweet</button>
+                <div class="Claw-actions">
+                    <!-- ReClaw -->
+                    {% if Claw.user_id != user.user_id %}
+                    <form action="/Claw" method="post" class="inline-form">
+                        <input type="hidden" name="Claw_id" value="{{ Claw._id_str }}"/>
+                        <button type="submit" class="btn-action">🔁 ReClaw</button>
                     </form>
                     {% endif %}
 
-                    <!-- Edit / Delete (only own tweets) -->
-                    {% if tweet.user_id == user.user_id and not tweet.is_retweet %}
-                    <button class="btn-action" onclick="toggleEdit('{{ tweet._id_str }}')">✏️ Edit</button>
-                    <form action="/delete-tweet" method="post" class="inline-form">
-                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
+                    <!-- Edit / Delete (only own Claws) -->
+                    {% if Claw.user_id == user.user_id and not Claw.is_Claw %}
+                    <button class="btn-action" onclick="toggleEdit('{{ Claw._id_str }}')">✏️ Edit</button>
+                    <form action="/delete-Claw" method="post" class="inline-form">
+                        <input type="hidden" name="Claw_id" value="{{ Claw._id_str }}"/>
                         <button type="submit" class="btn-action btn-danger">🗑️ Delete</button>
                     </form>
                     {% endif %}
                 </div>
 
                 <!-- Edit form (hidden by default) -->
-                {% if tweet.user_id == user.user_id and not tweet.is_retweet %}
-                <div id="edit-{{ tweet._id_str }}" class="edit-form" hidden>
-                    <form action="/edit-tweet" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="tweet_id" value="{{ tweet._id_str }}"/>
-                        <textarea name="content" maxlength="280">{{ tweet.content }}</textarea>
+                {% if Claw.user_id == user.user_id and not Claw.is_Claw %}
+                <div id="edit-{{ Claw._id_str }}" class="edit-form" hidden>
+                    <form action="/edit-Claw" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="Claw_id" value="{{ Claw._id_str }}"/>
+                        <textarea name="content" maxlength="280">{{ Claw.content }}</textarea>
                         <label class="btn btn-outline btn-sm">
                             📷 Change Image
                             <input type="file" name="image" accept=".jpg,.jpeg,.png" hidden/>
                         </label>
                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                        <button type="button" class="btn btn-outline btn-sm" onclick="toggleEdit('{{ tweet._id_str }}')">Cancel</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="toggleEdit('{{ Claw._id_str }}')">Cancel</button>
                     </form>
                 </div>
                 {% endif %}
             </div>
             {% endfor %}
 
-            {% if not tweets %}
+            {% if not Claws %}
             <div class="empty-state">
-                <p>No tweets yet. Follow some people or post your first Crawl!</p>
+                <p>No Claws yet. Follow some people or post your first Crawl!</p>
             </div>
             {% endif %}
         </div>
@@ -137,7 +137,7 @@
 
     <script>
         // Character counter
-        const textarea  = document.getElementById('tweet-content');
+        const textarea  = document.getElementById('Claw-content');
         const charCount = document.getElementById('char-count');
         if(textarea) {
             textarea.addEventListener('input', function() {

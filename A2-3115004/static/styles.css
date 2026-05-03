@@ -130,25 +130,25 @@ nav {
     color: #536471;
 }
 
-/* ── Tweet Card ────────────────────────────────────────────────────────── */
-.tweet-card {
+/* ── Claw Card ────────────────────────────────────────────────────────── */
+.Claw-card {
     padding: 16px 20px;
     border-bottom: 1px solid #e1e8ed;
     transition: background 0.15s;
 }
 
-.tweet-card:hover {
+.Claw-card:hover {
     background: #f7f9f9;
 }
 
-.tweet-header {
+.Claw-header {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     margin-bottom: 8px;
 }
 
-.tweet-meta {
+.Claw-meta {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -163,23 +163,23 @@ nav {
     text-decoration: underline;
 }
 
-.retweet-label {
+.Claw-label {
     font-size: 13px;
     color: #536471;
 }
 
-.tweet-time {
+.Claw-time {
     font-size: 13px;
     color: #536471;
 }
 
-.tweet-content {
+.Claw-content {
     font-size: 15px;
     line-height: 1.5;
     margin-bottom: 10px;
 }
 
-.tweet-image {
+.Claw-image {
     width: 100%;
     max-height: 400px;
     object-fit: cover;
@@ -188,7 +188,7 @@ nav {
     margin-bottom: 10px;
 }
 
-.tweet-actions {
+.Claw-actions {
     display: flex;
     gap: 16px;
     margin-top: 8px;
