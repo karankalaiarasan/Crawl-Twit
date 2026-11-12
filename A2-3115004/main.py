@@ -2,6 +2,7 @@
 # A2-3115004 - Twitter/X Clone
 # FastAPI + MongoDB + Firebase Auth + Azurite
 
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,12 +15,18 @@ import starlette.status as status
 from datetime import datetime, timedelta
 from bson import ObjectId
 from azure.storage.blob import BlobServiceClient, AccessPolicy, ContainerSasPermissions, PublicAccess
+from dotenv import load_dotenv
 import uvicorn
 import certifi
 
+load_dotenv()
+
 # ── MongoDB connection ────────────────────────────────────────────────────
 # Replace with YOUR MongoDB Atlas connection string
-uri = "mongodb+srv://karthickkaran31_db_user:KaranTwitter1931@mytwitterpage.ic10dmu.mongodb.net/"
+uri = os.getenv('MONGODB_URI')
+if not uri:
+    raise RuntimeError('MONGODB_URI is not set. Copy .env.example to .env and add your MongoDB Atlas connection string.')
+
 
 client = MongoClient(
     uri,
