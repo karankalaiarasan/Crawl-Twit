@@ -1,4 +1,4 @@
-# Crawl
+﻿# Crawl
 
 Crawl is a Twitter/X-style social app built with FastAPI, Jinja2, MongoDB Atlas, Firebase Authentication, and Azure Blob Storage via Azurite.
 
@@ -24,7 +24,8 @@ Crawl is a Twitter/X-style social app built with FastAPI, Jinja2, MongoDB Atlas,
 
 ## Run
 ```bash
-uvicorn A2-3115004.main:app --reload
+cd A2-3115004
+uvicorn main:app --reload
 ```
 
 Open the app in your browser at `http://127.0.0.1:8000`.
