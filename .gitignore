@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+__azurite_db_*.json
+__blobstorage__/
+.vscode/
